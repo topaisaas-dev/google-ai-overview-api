@@ -1,0 +1,34 @@
+{
+  "name": "google-ai-overview-api",
+  "version": "1.0.0",
+  "description": "Ultra-fast Google AI Overview & SGE SERP Extractor API (Generative summaries, cited sources, follow-up queries, organic ranking & cannibalization audit)",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test tests/serp_extractor.test.js"
+  },
+  "keywords": [
+    "google-ai-overview",
+    "sge-extractor",
+    "serp-api",
+    "search-generative-experience",
+    "seo-intelligence",
+    "ai-citations",
+    "rag-grounding",
+    "google-search",
+    "cloudflare-worker",
+    "edge-computing"
+  ],
+  "author": "topaisaas-dev",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241230.0",
+    "typescript": "^5.7.2",
+    "wrangler": "^3.99.0"
+  }
+}

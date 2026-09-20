@@ -1,0 +1,436 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Google AI Overview & SGE SERP Extractor API",
+    "version": "1.0.0",
+    "description": "Ultra-fast, production-grade extraction engine for Google AI Overviews (SGE), generative summaries, cited source URLs, follow-up queries, organic ranking, and SEO click cannibalization impact. Built for AI agents, RAG pipelines, and SEO intelligence platforms.",
+    "contact": {
+      "name": "TopAI SaaS Dev",
+      "url": "https://topaisaas.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://google-ai-overview-api.topaisaas.workers.dev",
+      "description": "Cloudflare Edge Production Server (Sub-50ms global latency)"
+    }
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Healthcheck and Edge Status",
+        "description": "Returns operational health, Cloudflare edge region, and sub-engine status.",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Service is fully operational.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/serp/ai-overview": {
+      "get": {
+        "summary": "Extract Google AI Overview",
+        "description": "Targeted endpoint extracting solely the Google AI Overview generative block: summary text, Markdown formatted answer, cited reference source cards with favicons, and follow-up search questions.",
+        "operationId": "getAiOverview",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Target search query (e.g. 'what is quantum computing', 'best crm software for startups').",
+            "schema": {
+              "type": "string",
+              "example": "what is quantum computing"
+            }
+          },
+          {
+            "name": "gl",
+            "in": "query",
+            "required": false,
+            "description": "Two-letter country code (ISO 3166-1 alpha-2). Defaults to 'us'.",
+            "schema": {
+              "type": "string",
+              "default": "us",
+              "example": "us"
+            }
+          },
+          {
+            "name": "hl",
+            "in": "query",
+            "required": false,
+            "description": "Two-letter language code (ISO 639-1). Defaults to 'en'.",
+            "schema": {
+              "type": "string",
+              "default": "en",
+              "example": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI Overview extracted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AIOverviewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter."
+          }
+        }
+      }
+    },
+    "/v1/serp/search": {
+      "get": {
+        "summary": "Full SERP with AI Overview and Organic Results",
+        "description": "Comprehensive SERP extraction combining the generative AI Overview, top 10 organic results, People Also Ask questions, related searches, and Knowledge Panel.",
+        "operationId": "getFullSerp",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search query string.",
+            "schema": {
+              "type": "string",
+              "example": "benefits of rust programming"
+            }
+          },
+          {
+            "name": "gl",
+            "in": "query",
+            "required": false,
+            "description": "Country code. Defaults to 'us'.",
+            "schema": {
+              "type": "string",
+              "default": "us"
+            }
+          },
+          {
+            "name": "hl",
+            "in": "query",
+            "required": false,
+            "description": "Language code. Defaults to 'en'.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "num",
+            "in": "query",
+            "required": false,
+            "description": "Number of organic results to return (max 20). Defaults to 10.",
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comprehensive SERP returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FullSerpResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameter."
+          }
+        }
+      }
+    },
+    "/v1/serp/compare": {
+      "get": {
+        "summary": "SEO Cannibalization & Citation Overlap Audit",
+        "description": "Evaluates whether Google's AI Overview cannibalizes organic traffic from the #1 rank, lists cited domains vs organic leaders, and calculates zero-click traffic disruption risk.",
+        "operationId": "compareSerpCannibalization",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search query to audit.",
+            "schema": {
+              "type": "string",
+              "example": "stripe vs adyen fees"
+            }
+          },
+          {
+            "name": "gl",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "us"
+            }
+          },
+          {
+            "name": "hl",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cannibalization analysis computed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "healthy"
+          },
+          "service": {
+            "type": "string",
+            "example": "google-ai-overview-api"
+          },
+          "version": {
+            "type": "string",
+            "example": "1.0.0"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "uptime": {
+            "type": "number",
+            "example": 99.99
+          },
+          "edgeRegion": {
+            "type": "string",
+            "example": "CDG"
+          }
+        }
+      },
+      "AIOverviewReference": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Quantum Computing: A Detailed Guide"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://en.wikipedia.org/wiki/Quantum_computing"
+          },
+          "domain": {
+            "type": "string",
+            "example": "wikipedia.org"
+          },
+          "snippet": {
+            "type": "string",
+            "example": "Quantum computing is a rapidly-emerging technology that harnesses the laws of quantum mechanics..."
+          },
+          "favicon": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.google.com/s2/favicons?domain=wikipedia.org&sz=64"
+          }
+        }
+      },
+      "AIOverviewResponse": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "example": "what is quantum computing"
+          },
+          "country": {
+            "type": "string",
+            "example": "us"
+          },
+          "language": {
+            "type": "string",
+            "example": "en"
+          },
+          "has_ai_overview": {
+            "type": "boolean",
+            "example": true
+          },
+          "overview_type": {
+            "type": "string",
+            "example": "generative_summary"
+          },
+          "text_content": {
+            "type": "string",
+            "example": "Quantum computing harnesses quantum mechanics principles to solve complex problems..."
+          },
+          "markdown_content": {
+            "type": "string",
+            "example": "### 🤖 Google AI Overview..."
+          },
+          "references": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AIOverviewReference"
+            }
+          },
+          "follow_up_questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "confidence_score": {
+            "type": "number",
+            "example": 0.95
+          },
+          "extraction_time_ms": {
+            "type": "integer",
+            "example": 42
+          }
+        }
+      },
+      "OrganicResult": {
+        "type": "object",
+        "properties": {
+          "position": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "snippet": {
+            "type": "string"
+          },
+          "is_cited_in_ai_overview": {
+            "type": "boolean"
+          }
+        }
+      },
+      "FullSerpResponse": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "ai_overview": {
+            "$ref": "#/components/schemas/AIOverviewResponse"
+          },
+          "organic_results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganicResult"
+            }
+          },
+          "people_also_ask": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "related_searches": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "knowledge_panel": {
+            "type": "object",
+            "nullable": true
+          },
+          "total_organic_results": {
+            "type": "integer",
+            "example": 10
+          },
+          "extraction_time_ms": {
+            "type": "integer",
+            "example": 48
+          }
+        }
+      },
+      "CompareResponse": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string"
+          },
+          "cannibalization_analysis": {
+            "type": "object",
+            "properties": {
+              "ai_overview_present": {
+                "type": "boolean"
+              },
+              "is_organic_leader_cited": {
+                "type": "boolean"
+              },
+              "citation_overlap_pct": {
+                "type": "number"
+              },
+              "cannibalization_risk": {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MODERATE",
+                  "HIGH",
+                  "CRITICAL"
+                ]
+              },
+              "traffic_impact_assessment": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
