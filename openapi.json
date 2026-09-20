@@ -6,7 +6,7 @@
     "description": "Ultra-fast, production-grade extraction engine for Google AI Overviews (SGE), generative summaries, cited source URLs, follow-up queries, organic ranking, and SEO click cannibalization impact. Built for AI agents, RAG pipelines, and SEO intelligence platforms.",
     "contact": {
       "name": "TopAI SaaS Dev",
-      "url": "https://topaisaas.com"
+      "url": "https://github.com/topaisaas-dev"
     },
     "license": {
       "name": "MIT",
@@ -31,7 +31,33 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/HealthResponse"
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "healthy"
+                    },
+                    "service": {
+                      "type": "string",
+                      "example": "google-ai-overview-api"
+                    },
+                    "version": {
+                      "type": "string",
+                      "example": "1.0.0"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "example": "2026-09-20T21:40:00.000Z"
+                    },
+                    "uptime": {
+                      "type": "number",
+                      "example": 99.99
+                    },
+                    "edgeRegion": {
+                      "type": "string",
+                      "example": "CDG"
+                    }
+                  }
                 }
               }
             }
@@ -84,13 +110,89 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AIOverviewResponse"
+                  "type": "object",
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "example": "what is quantum computing"
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "us"
+                    },
+                    "language": {
+                      "type": "string",
+                      "example": "en"
+                    },
+                    "has_ai_overview": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "overview_type": {
+                      "type": "string",
+                      "example": "generative_summary"
+                    },
+                    "text_content": {
+                      "type": "string",
+                      "example": "Quantum computing harnesses quantum mechanics principles to solve complex problems..."
+                    },
+                    "markdown_content": {
+                      "type": "string",
+                      "example": "### Google AI Overview\n\nQuantum computing harnesses quantum mechanics..."
+                    },
+                    "references": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "position": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Quantum Computing: A Detailed Guide"
+                          },
+                          "url": {
+                            "type": "string",
+                            "example": "https://en.wikipedia.org/wiki/Quantum_computing"
+                          },
+                          "domain": {
+                            "type": "string",
+                            "example": "wikipedia.org"
+                          },
+                          "snippet": {
+                            "type": "string",
+                            "example": "Quantum computing is a rapidly-emerging technology..."
+                          },
+                          "favicon": {
+                            "type": "string",
+                            "example": "https://www.google.com/s2/favicons?domain=wikipedia.org&sz=64"
+                          }
+                        }
+                      }
+                    },
+                    "follow_up_questions": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "confidence_score": {
+                      "type": "number",
+                      "example": 0.95
+                    },
+                    "extraction_time_ms": {
+                      "type": "integer",
+                      "example": 42
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "Invalid query parameter."
+            "description": "Invalid or missing search query parameter."
           }
         }
       }
@@ -138,8 +240,7 @@
             "description": "Number of organic results to return (max 20). Defaults to 10.",
             "schema": {
               "type": "integer",
-              "default": 10,
-              "maximum": 20
+              "default": 10
             }
           }
         ],
@@ -149,7 +250,101 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/FullSerpResponse"
+                  "type": "object",
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "example": "benefits of rust programming"
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "us"
+                    },
+                    "language": {
+                      "type": "string",
+                      "example": "en"
+                    },
+                    "ai_overview": {
+                      "type": "object",
+                      "properties": {
+                        "has_ai_overview": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "overview_type": {
+                          "type": "string",
+                          "example": "generative_summary"
+                        },
+                        "text_content": {
+                          "type": "string",
+                          "example": "Rust provides memory safety without garbage collection..."
+                        },
+                        "references": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "title": { "type": "string" },
+                              "url": { "type": "string" },
+                              "domain": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "organic_results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "position": {
+                            "type": "integer",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "Why Rust is the most loved language"
+                          },
+                          "url": {
+                            "type": "string",
+                            "example": "https://stackoverflow.blog/rust"
+                          },
+                          "domain": {
+                            "type": "string",
+                            "example": "stackoverflow.blog"
+                          },
+                          "snippet": {
+                            "type": "string",
+                            "example": "Rust has been voted the most loved programming language..."
+                          },
+                          "is_cited_in_ai_overview": {
+                            "type": "boolean",
+                            "example": true
+                          }
+                        }
+                      }
+                    },
+                    "people_also_ask": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "related_searches": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "total_organic_results": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "extraction_time_ms": {
+                      "type": "integer",
+                      "example": 48
+                    }
+                  }
                 }
               }
             }
@@ -201,231 +396,53 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompareResponse"
+                  "type": "object",
+                  "properties": {
+                    "query": {
+                      "type": "string",
+                      "example": "stripe vs adyen fees"
+                    },
+                    "cannibalization_analysis": {
+                      "type": "object",
+                      "properties": {
+                        "ai_overview_present": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "is_organic_leader_cited": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "citation_overlap_pct": {
+                          "type": "number",
+                          "example": 33.3
+                        },
+                        "cannibalization_risk": {
+                          "type": "string",
+                          "example": "HIGH"
+                        },
+                        "traffic_impact_assessment": {
+                          "type": "string",
+                          "example": "Organic leader #1 is not cited in AI Overview."
+                        }
+                      }
+                    },
+                    "organic_leader": {
+                      "type": "object",
+                      "properties": {
+                        "title": { "type": "string" },
+                        "url": { "type": "string" },
+                        "domain": { "type": "string" }
+                      }
+                    },
+                    "cited_domains": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
                 }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "HealthResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "example": "healthy"
-          },
-          "service": {
-            "type": "string",
-            "example": "google-ai-overview-api"
-          },
-          "version": {
-            "type": "string",
-            "example": "1.0.0"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "uptime": {
-            "type": "number",
-            "example": 99.99
-          },
-          "edgeRegion": {
-            "type": "string",
-            "example": "CDG"
-          }
-        }
-      },
-      "AIOverviewReference": {
-        "type": "object",
-        "properties": {
-          "position": {
-            "type": "integer",
-            "example": 1
-          },
-          "title": {
-            "type": "string",
-            "example": "Quantum Computing: A Detailed Guide"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://en.wikipedia.org/wiki/Quantum_computing"
-          },
-          "domain": {
-            "type": "string",
-            "example": "wikipedia.org"
-          },
-          "snippet": {
-            "type": "string",
-            "example": "Quantum computing is a rapidly-emerging technology that harnesses the laws of quantum mechanics..."
-          },
-          "favicon": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://www.google.com/s2/favicons?domain=wikipedia.org&sz=64"
-          }
-        }
-      },
-      "AIOverviewResponse": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string",
-            "example": "what is quantum computing"
-          },
-          "country": {
-            "type": "string",
-            "example": "us"
-          },
-          "language": {
-            "type": "string",
-            "example": "en"
-          },
-          "has_ai_overview": {
-            "type": "boolean",
-            "example": true
-          },
-          "overview_type": {
-            "type": "string",
-            "example": "generative_summary"
-          },
-          "text_content": {
-            "type": "string",
-            "example": "Quantum computing harnesses quantum mechanics principles to solve complex problems..."
-          },
-          "markdown_content": {
-            "type": "string",
-            "example": "### 🤖 Google AI Overview..."
-          },
-          "references": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/AIOverviewReference"
-            }
-          },
-          "follow_up_questions": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "confidence_score": {
-            "type": "number",
-            "example": 0.95
-          },
-          "extraction_time_ms": {
-            "type": "integer",
-            "example": 42
-          }
-        }
-      },
-      "OrganicResult": {
-        "type": "object",
-        "properties": {
-          "position": {
-            "type": "integer",
-            "example": 1
-          },
-          "title": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri"
-          },
-          "domain": {
-            "type": "string"
-          },
-          "snippet": {
-            "type": "string"
-          },
-          "is_cited_in_ai_overview": {
-            "type": "boolean"
-          }
-        }
-      },
-      "FullSerpResponse": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string"
-          },
-          "country": {
-            "type": "string"
-          },
-          "language": {
-            "type": "string"
-          },
-          "ai_overview": {
-            "$ref": "#/components/schemas/AIOverviewResponse"
-          },
-          "organic_results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/OrganicResult"
-            }
-          },
-          "people_also_ask": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "related_searches": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "knowledge_panel": {
-            "type": "object",
-            "nullable": true
-          },
-          "total_organic_results": {
-            "type": "integer",
-            "example": 10
-          },
-          "extraction_time_ms": {
-            "type": "integer",
-            "example": 48
-          }
-        }
-      },
-      "CompareResponse": {
-        "type": "object",
-        "properties": {
-          "query": {
-            "type": "string"
-          },
-          "cannibalization_analysis": {
-            "type": "object",
-            "properties": {
-              "ai_overview_present": {
-                "type": "boolean"
-              },
-              "is_organic_leader_cited": {
-                "type": "boolean"
-              },
-              "citation_overlap_pct": {
-                "type": "number"
-              },
-              "cannibalization_risk": {
-                "type": "string",
-                "enum": [
-                  "LOW",
-                  "MODERATE",
-                  "HIGH",
-                  "CRITICAL"
-                ]
-              },
-              "traffic_impact_assessment": {
-                "type": "string"
               }
             }
           }
